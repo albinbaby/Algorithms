@@ -113,4 +113,69 @@ void BinaryTree<Type>::PostOrder(Node<Type>* node)
 	std::cout << node->m_element << std::endl;
 }
 
+template <typename Type>
+Type GetMin()
+{
+    return Type();
+}
+
+int GetMin()
+{
+    return INT_MIN;
+}
+
+template <typename Type>
+Type GetMax()
+{
+    return Type();
+}
+
+int GetMax()
+{
+    return INT_MAX;
+}
+
+template <typename Type>
+bool BinaryTree<Type>::IsValid()
+{
+    return IsBTree(m_rootNode, GetMin(), GetMax());
+}
+
+template <typename Type>
+bool BinaryTree<Type>::IsBTree(Node<Type>* node, const Type& min, const Type& max)
+{
+    if (!node) return true;
+
+    if (node->m_element > min && node->m_element < max) {
+        return IsBTree(node->m_leftNode, min, node->m_element) && IsBTree(node->m_rightNode, node->m_element, max);
+    }
+
+    return false;
+}
+
+template <typename Type>
+void BinaryTree<Type>::CreateBTree(const Type elements[], int size, TraverseOrder traverseOrder)
+{
+    int index = 0;
+    switch (traverseOrder)
+    {
+    case PreOrderTraverse:
+        m_rootNode = CreateBTreeFromPreOrder(GetMin(), GetMax(), index, elements, size);
+    }
+}
+
+template <typename Type>
+Node<Type>* BinaryTree<Type>::CreateBTreeFromPreOrder(const Type& min, const Type& max, int& index, const Type elements[], int size)
+{
+    if (index >= size || min > elements[index] || max < elements[index]) {
+        return NULL;
+    }
+
+    Node<Type>* node = new Node<Type>(elements[index]);
+    index++;
+    node->m_leftNode = CreateBTreeFromPreOrder(min, node->m_element, index, elements, size);
+    node->m_rightNode = CreateBTreeFromPreOrder(node->m_element, max, index, elements, size);
+    return node;
+}
+
 template class BinaryTree<int>;
